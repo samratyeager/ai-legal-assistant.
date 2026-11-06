@@ -1,0 +1,47 @@
+================================================================================
+                      AI LEGAL ASSISTANT - HOW TO RUN
+================================================================================
+
+--------------------------------------------------------------------------------
+METHOD 1: Running from Project Root (C:\AI Legal Assistant)  [RECOMMENDED]
+--------------------------------------------------------------------------------
+
+1. Activate Virtual Environment:
+   .\backend\venv\Scripts\Activate.ps1
+
+2. Start the Server:
+uvicorn main:app --reload --port 8000
+
+   (Or direct one-line command):
+   .\backend\venv\Scripts\uvicorn.exe backend.main:app --reload --port 8000
+
+
+--------------------------------------------------------------------------------
+METHOD 2: Running from the "backend" Directory (C:\AI Legal Assistant\backend)
+--------------------------------------------------------------------------------
+
+If your terminal is inside the "backend" folder:
+
+1. Activate Virtual Environment:
+   .\venv\Scripts\Activate.ps1
+
+2. Start the Server:
+   uvicorn main:app --reload --port 8000
+
+   (Or simply):
+   python main.py
+
+
+--------------------------------------------------------------------------------
+METHOD 3: Universal Single Command (Works from ANY folder in PowerShell)
+--------------------------------------------------------------------------------
+python "C:\AI Legal Assistant\backend\main.py"
+
+
+--------------------------------------------------------------------------------
+ACCESS THE APPLICATION
+--------------------------------------------------------------------------------
+Once the server is running, open your browser and navigate to:
+
+   http://localhost:8000
+================================================================================

@@ -1,20 +1,11 @@
-# ==========================================
-# Environment Variables & Secrets (CRITICAL)
-# ==========================================
+# Environment variables and secrets
 .env
 .env.*
 *.env
-*.env.local
-*.env.development.local
-*.env.test.local
-*.env.production.local
-backend/.env
 !.env.example
 !backend/.env.example
 
-# ==========================================
-# Python & Virtual Environments (CRITICAL)
-# ==========================================
+# Python virtual environments
 venv/
 .venv/
 env/
@@ -22,85 +13,60 @@ ENV/
 backend/venv/
 backend/.venv/
 backend/env/
+
+# Python cache and build files
 __pycache__/
-*/__pycache__/
-**/*.py[cod]
+**/__pycache__/
+*.py[cod]
 *$py.class
-*.pyc
-*.pyo
-*.pyd
 .Python
 build/
-develop-eggs/
 dist/
-downloads/
-eggs/
 .eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
 
-# ==========================================
-# Node / Next.js / Frontend
-# ==========================================
+# Node.js and Next.js
 node_modules/
-frontend/node_modules/
 .next/
-frontend/.next/
 out/
-frontend/out/
 .pnp
 .pnp.*
+.turbo/
+
+# Yarn generated files
 .yarn/*
 !.yarn/patches
 !.yarn/plugins
 !.yarn/releases
 !.yarn/versions
 
-# ==========================================
-# Local Databases, Vector Store & Caches
-# ==========================================
+# Local databases and vector stores
 *.db
 *.sqlite
 *.sqlite3
-backend/*.db
-backend/chroma_db/
-chroma_db/
-backend/test_chroma/
-backend/test_chroma_legal/
+
+# Caches and test reports
 .cache/
 .pytest_cache/
 .coverage
 htmlcov/
 
-# ==========================================
-# Logs & Temporary Files
-# ==========================================
+# Logs and temporary files
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.turbo/
 
-# ==========================================
-# IDE & Operating System Files
-# ==========================
+# IDE and operating system
+.vscode/
+.idea/
 .DS_Store
-.DS_Store?
 ._*
 .Spotlight-V100
 .Trashes
-ehthumbs.db
 Thumbs.db
-.vscode/
-.idea/
+ehthumbs.db
 *.swp
 *.swo

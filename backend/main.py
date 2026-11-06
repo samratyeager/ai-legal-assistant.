@@ -1,8 +1,20 @@
 import os
+import sys
+
+# Ensure backend directory and project root are always in sys.path
+_current_dir = os.path.dirname(os.path.abspath(__file__))
+_parent_dir = os.path.dirname(_current_dir)
+
+if _current_dir not in sys.path:
+    sys.path.insert(0, _current_dir)
+if _parent_dir not in sys.path:
+    sys.path.insert(0, _parent_dir)
+
 from dotenv import load_dotenv
 
-# Load environment variables from .env file before importing app modules
-load_dotenv()
+# Load .env from backend directory and project root
+load_dotenv(os.path.join(_current_dir, ".env"))
+load_dotenv(os.path.join(_parent_dir, ".env"))
 
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
@@ -77,3 +89,8 @@ if os.path.exists(frontend_build_path):
         # Fallback
         index = os.path.join(frontend_build_path, "index.html")
         return FileResponse(index)
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True, app_dir=_current_dir)
+

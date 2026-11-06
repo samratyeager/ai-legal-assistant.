@@ -1,20 +1,31 @@
 import os
 import re
+from dotenv import load_dotenv
 from groq import Groq
 from sqlalchemy.orm import Session
 from app.models import models
 from app.services import vector_service
 
+_curr_dir = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(_curr_dir, "..", "..", ".env"), override=True)
+load_dotenv(os.path.join(_curr_dir, "..", "..", "..", ".env"), override=True)
+
 
 class AIService:
     def __init__(self):
-        self.api_key = os.environ.get("GROQ_API_KEY")
         self.client = None
+        self._init_client()
+
+    def _init_client(self):
+        self.api_key = os.environ.get("GROQ_API_KEY")
         if self.api_key:
+            # Strip extra quotes if any
+            clean_key = self.api_key.strip().strip('"').strip("'")
             try:
-                self.client = Groq(api_key=self.api_key)
+                self.client = Groq(api_key=clean_key)
             except Exception as e:
                 print(f"Error initializing Groq client: {e}")
+                self.client = None
 
     # ------------------------------------------------------------------
     # RAG Context Retrieval — Semantic (ChromaDB) with keyword fallback
@@ -101,32 +112,24 @@ class AIService:
 
         # 2. Build professional Senior Legal Counsel system prompt
         base_lawyer_instructions = (
-            "You are a Senior Legal Counsel and seasoned Advocate serving as the user's dedicated AI Lawyer and Legal Advisor.\n"
-            "Your legal advice is authoritative, courteous, highly structured, precise, and practical.\n\n"
-            "BEHAVIOR & TONE GUIDELINES:\n"
-            "1. **Greetings & Pleasantries**: When the user greets you (e.g., 'hi', 'hello', 'namaste', 'good morning', 'who are you'), respond warmly, professionally, and respectfully (e.g., 'Namaste / Greetings! I am your AI Legal Assistant and Counsel. How can I assist you with your legal research, contract review, or case strategy today?'). Do NOT give a cold refusal for friendly greetings.\n"
-            "2. **Document & Evidence Analysis**: When the user provides an uploaded document, contract, or evidence excerpt (tagged with `[Uploaded Document: ...]`), IMMEDIATELY analyze its legal contents. Identify key terms, obligations, rights, liabilities, potential ambiguities, and enforceability. NEVER tell the user to perform OCR or copy/paste text elsewhere—always provide direct legal analysis and recommendations based on the provided material.\n"
-            "3. **Formatting & Structure**: Structure your legal opinions clearly with bold headers and bullet points:\n"
-            "   - **Summary / Direct Legal Opinion**: A crisp, authoritative direct answer.\n"
-            "   - **Applicable Statutes & Legal Framework**: Relevant statutory provisions, acts, or judicial precedents (e.g., Nepalese Muluki Civil/Criminal Code, Evidence Act, Contract Act, or general jurisprudence).\n"
-            "   - **Legal Analysis & Key Requirements**: Structured breakdown of obligations, risks, and criteria.\n"
-            "   - **Strategic Recommendations / Next Steps**: Actionable, lawyer-grade guidance on what to do next.\n"
-            "4. **No Raw Clutter**: Do NOT output raw markdown tables with pipes or HTML tags like `<br>`. Use clean bullet points and bold section headers.\n"
-            "5. **Accuracy**: Ground your analysis in sound legal principles. If details in a specific document or scenario are missing, advise what specific clauses or evidence should be verified."
+            "You are a Senior Legal Counsel and seasoned Advocate serving as the user's dedicated AI Legal Advisor for Nepal Law.\n"
+            "Your tone is natural, professional, clear, and direct.\n\n"
+            "GUIDELINES:\n"
+            "1. **Natural & Direct Answers**: For general questions, explanations, greetings, or conversational questions (e.g. 'what is bail?', 'what happens if I am arrested?', 'namaste'), answer in natural, clear paragraphs and concise bullet points. Do NOT force boilerplate headers or rigid 4-part templates for simple questions.\n"
+            "2. **Strict Legal Inquiries**: For complex cases, formal legal assessments, or contract reviews, structure your legal opinion with applicable statutes (e.g., Muluki Criminal/Civil Code, Evidence Act) and actionable next steps.\n"
+            "3. **Document & Evidence Analysis**: When analyzing uploaded documents or evidence, directly analyze key terms, obligations, liabilities, and enforceability.\n"
+            "4. **No Clutter**: Never output raw markdown table borders (|---|), HTML tags (<br>), or reasoning tags (<think>). Use clean bullet points and bold text."
         )
 
         if rag_context:
             system_content = (
                 f"{base_lawyer_instructions}\n\n"
-                "CLIENT REPOSITORY & CASE DATABASE CONTEXT:\n"
-                "Integrate the following retrieved records and case precedents into your legal analysis where relevant:\n"
+                "RELEVANT NEPAL CASE PRECEDENTS & STATUTES:\n"
                 f"{rag_context}\n"
+                "Integrate these retrieved facts and precedents naturally into your answer."
             )
         else:
-            system_content = (
-                f"{base_lawyer_instructions}\n\n"
-                "Note: No specific prior client case records were retrieved for this query. Provide comprehensive statutory advisory based on established jurisprudence and legal principles."
-            )
+            system_content = base_lawyer_instructions
 
         system_prompt = {"role": "system", "content": system_content}
 

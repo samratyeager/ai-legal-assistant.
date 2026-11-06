@@ -1,16 +1,10 @@
 /** @type {import('next').NextConfig} */
-const backendUrl = process.env.BACKEND_URL || 'http://127.0.0.1:8000';
-
 const nextConfig = {
-  devIndicators: false,
-  async rewrites() {
-    return [
-      {
-        source: '/api/:path*',
-        destination: `${backendUrl.replace(/\/$/, '')}/api/:path*`,
-      },
-    ];
+  output: 'export',
+  images: {
+    unoptimized: true,
   },
+  devIndicators: false,
 };
 
 export default nextConfig;
